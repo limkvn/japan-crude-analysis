@@ -53,9 +53,43 @@
   .source { font-size: 11px; color: #475569; margin-top: 20px; padding-top: 14px; border-top: 1px solid #1e2130; line-height: 1.6; }
   .source a { color: #6486aa; text-decoration: none; }
   .source a:hover { text-decoration: underline; color: #8ab4f8; }
+  #auth-gate { display:flex; align-items:center; justify-content:center; min-height:100vh; background:linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+  .auth-box { background:white; border-radius:12px; padding:2.5rem; width:360px; box-shadow:0 4px 24px rgba(0,0,0,0.2); text-align:center; }
+  .auth-box h1 { font-size:1.2rem; color:#1e293b; margin-bottom:0.3rem; font-family:Inter,sans-serif; }
+  .auth-box .subtitle { font-size:0.85rem; color:#64748b; margin-bottom:1.5rem; font-family:Inter,sans-serif; }
+  .auth-box input { width:100%; padding:0.7rem 1rem; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95rem; outline:none; transition:border-color 0.15s; font-family:Inter,sans-serif; }
+  .auth-box input:focus { border-color:#3b82f6; }
+  .auth-box button { width:100%; padding:0.7rem; margin-top:0.75rem; border:none; border-radius:8px; background:#1e293b; color:white; font-size:0.95rem; font-weight:600; cursor:pointer; transition:background 0.15s; font-family:Inter,sans-serif; }
+  .auth-box button:hover { background:#334155; }
+  .auth-error { color:#ef4444; font-size:0.85rem; margin-top:0.75rem; display:none; font-family:Inter,sans-serif; }
 </style>
 </head>
 <body>
+<div id="auth-gate">
+  <div class="auth-box">
+    <h1>Japan Crude Analysis</h1>
+    <div class="subtitle">Enter the password to continue</div>
+    <input type="password" id="auth-pw" placeholder="Password" autofocus
+      onkeydown="if(event.key==='Enter')document.getElementById('auth-btn').click()">
+    <button id="auth-btn" onclick="checkAuth()">Enter</button>
+    <div class="auth-error" id="auth-err">Incorrect password</div>
+  </div>
+</div>
+<div id="dashboard-content" style="display:none;">
+<script>
+async function checkAuth() {
+  var pw = document.getElementById("auth-pw").value;
+  var enc = new TextEncoder();
+  var hash = await crypto.subtle.digest("SHA-256", enc.encode(pw));
+  var hex = Array.from(new Uint8Array(hash)).map(function(b){return b.toString(16).padStart(2,"0")}).join("");
+  if (hex === "96869035ed72106a7d2d9eabd7c5b46ca832d3c51a5b2f524c36f224d870eb8b") {
+    document.getElementById("auth-gate").style.display = "none";
+    document.getElementById("dashboard-content").style.display = "block";
+  } else {
+    document.getElementById("auth-err").style.display = "block";
+  }
+}
+</script>
 <div class="header">
   <h1>Japan Commercial Crude Oil Stocks: March 2026 in Historical Context</h1>
   <div class="subtitle">PAJ / METI monthly data (2002&ndash;2025) vs. PAJ Weekly (March 2026) &mdash; Iran Crisis Impact Assessment</div>
@@ -650,5 +684,6 @@ new Chart(document.getElementById('chart6'), {
   }
 });
 </script>
+</div><!-- end dashboard-content -->
 </body>
 </html>
